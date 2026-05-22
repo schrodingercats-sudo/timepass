@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Hearing
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
@@ -52,13 +53,15 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
     object Equalizer : Screen("equalizer", "Equalizer", Icons.Filled.GraphicEq)
     object Boost : Screen("boost", "Boost", Icons.Filled.Speed)
     object Calibrate : Screen("calibrate", "Calibrate", Icons.Filled.Hearing)
+    object SettingsInfo : Screen("settings", "Settings", Icons.Filled.Settings)
 }
 
 val items = listOf(
     Screen.Balance,
     Screen.Equalizer,
     Screen.Boost,
-    Screen.Calibrate
+    Screen.Calibrate,
+    Screen.SettingsInfo
 )
 
 @Composable
@@ -170,6 +173,7 @@ fun MainAppScreen() {
             composable(Screen.Equalizer.route) { EqualizerScreen(budViewModel) }
             composable(Screen.Boost.route) { BoostScreen(budViewModel) }
             composable(Screen.Calibrate.route) { CalibrateScreen(budViewModel) }
+            composable(Screen.SettingsInfo.route) { SettingsScreen() }
         }
     }
 }
