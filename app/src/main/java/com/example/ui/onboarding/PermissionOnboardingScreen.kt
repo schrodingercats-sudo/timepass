@@ -70,7 +70,17 @@ fun PermissionOnboardingScreen(onPermissionGrantedOrSkipped: () -> Unit) {
                 textAlign = TextAlign.Center
             )
             
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(
+                text = "Note: If Android says \"Restricted Setting\", go to device Settings → Apps → BudControl Pro → tap the 3 dots (top right) → \"Allow restricted settings\", then try again.",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.5f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
             
             Button(
                 onClick = {

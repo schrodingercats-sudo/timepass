@@ -68,6 +68,13 @@ fun SettingsScreen() {
                                 Text("Grant")
                             }
                         }
+                        
+                        Text(
+                            "If Android blocks this as a \"Restricted Setting\", go to device Settings → Apps → BudControl Pro → tap the 3 dots (top right) → \"Allow restricted settings\".",
+                            color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f),
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
