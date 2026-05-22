@@ -58,12 +58,27 @@ fun SettingsScreen() {
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.weight(1f)
                             )
+                            val overlayIntent = remember {
+                                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+                            }
+                            val detailsIntent = remember {
+                                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}"))
+                            }
                             TextButton(onClick = {
-                                val intent = Intent(
-                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                    Uri.parse("package:${context.packageName}")
-                                )
-                                context.startActivity(intent)
+                                try {
+                                    context.startActivity(detailsIntent)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }) {
+                                Text("Unlock")
+                            }
+                            TextButton(onClick = {
+                                try {
+                                    context.startActivity(overlayIntent)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
                             }) {
                                 Text("Grant")
                             }
