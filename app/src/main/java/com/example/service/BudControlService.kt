@@ -53,7 +53,6 @@ class BudControlService : Service() {
         val filter = IntentFilter().apply {
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
-            addAction("android.bluetooth.adapter.action.CONNECTION_STATE_CHANGED")
             addAction("android.bluetooth.headset.action.BATTERY_LEVEL_CHANGED")
         }
         

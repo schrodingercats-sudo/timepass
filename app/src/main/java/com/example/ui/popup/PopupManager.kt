@@ -18,34 +18,67 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 
 import com.example.data.PopupSettings
 
-class PopupManager(private val context: Context) : LifecycleOwner, SavedStateRegistryOwner {
+class CustomLifecycleOwner : LifecycleOwner, SavedStateRegistryOwner {
+    private val lifecycleRegistry = LifecycleRegistry(this)
+    private val savedStateRegistryController = SavedStateRegistryController.create(this)
+    
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
+        
+    override val savedStateRegistry: SavedStateRegistry
+        get() = savedStateRegistryController.savedStateRegistry
+        
+    fun onCreate() {
+        try {
+            savedStateRegistryController.performRestore(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    }
+    
+    fun onStart() {
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+    }
+    
+    fun onResume() {
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    }
+    
+    fun onPause() {
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    }
+    
+    fun onStop() {
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+    }
+    
+    fun onDestroy() {
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    }
+}
+
+class PopupManager(private val context: Context) {
     
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var composeView: ComposeView? = null
     private val popupSettings = PopupSettings(context)
-    
-    // Set up lifecycle and saved state for ComposeView in a standalone window
-    private val lifecycleRegistry = LifecycleRegistry(this)
-    private val savedStateRegistryController = SavedStateRegistryController.create(this)
-    
-    override val savedStateRegistry: SavedStateRegistry
-        get() = savedStateRegistryController.savedStateRegistry
-        
-    override val lifecycle: Lifecycle
-        get() = lifecycleRegistry
+    private var currentLifecycleOwner: CustomLifecycleOwner? = null
 
     fun showPopup(deviceName: String, leftBattery: Int?, rightBattery: Int?, caseBattery: Int?) {
         // Prevent duplicate popups
         removePopup()
         
-        savedStateRegistryController.performRestore(null)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        val lifecycleOwner = CustomLifecycleOwner()
+        currentLifecycleOwner = lifecycleOwner
+        
+        lifecycleOwner.onCreate()
+        lifecycleOwner.onStart()
+        lifecycleOwner.onResume()
 
         composeView = ComposeView(context).apply {
-            setViewTreeLifecycleOwner(this@PopupManager)
-            setViewTreeSavedStateRegistryOwner(this@PopupManager)
+            setViewTreeLifecycleOwner(lifecycleOwner)
+            setViewTreeSavedStateRegistryOwner(lifecycleOwner)
             setContent {
                 ConnectionPopup(
                     deviceName = deviceName,
@@ -86,14 +119,15 @@ class PopupManager(private val context: Context) : LifecycleOwner, SavedStateReg
     fun removePopup() {
         composeView?.let {
             try {
-                lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-                lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
-                lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+                currentLifecycleOwner?.onPause()
+                currentLifecycleOwner?.onStop()
+                currentLifecycleOwner?.onDestroy()
                 windowManager.removeView(it)
             } catch (e: Exception) {
                 // View might already be removed
             }
             composeView = null
+            currentLifecycleOwner = null
         }
     }
 }
